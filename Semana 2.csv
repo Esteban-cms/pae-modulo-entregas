@@ -1,4 +1,4 @@
-﻿menú,producto,cantidad,unidad,empaque
+﻿menu,producto,cantidad,unidad,empaque
 6,Fruta de temporada,60,gr,1
 6,Leche entera en polvo,15,Bolsa gr,380
 6,Azúcar refinada,9,Bolsa gr,500
@@ -85,3 +85,4 @@
 10,Paprika,0.1,Pqt,15
 10,Sal yodada,0.7,Bolsa,500
 10,Galletas tipo soda (2),8,Pqt,128
+
