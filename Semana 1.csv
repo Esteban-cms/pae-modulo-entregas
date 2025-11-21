@@ -1,7 +1,7 @@
 menu,producto,cantidad,unidad,empaque
 1,Leche entera en polvo,15,Bolsa gr,380
 1,Cocoa en polvo sin azúcar,5,Bolsa/gr,230
-1,Panela,9,gr,500
+1,Panela,9,Unidad,500
 1,Pan tajado,44,Pqt/gr,500
 1,Queso blanco o campesino,50,Pqt/gr,500
 1,Margarina suave de mesa,5,Barra/gr,125
@@ -14,7 +14,7 @@ menu,producto,cantidad,unidad,empaque
 1,Canela,0.1,gr,1
 1,Azúcar refinada,5,Bolsa/gr,500
 2,Leche entera en polvo,15,Bolsa gr,380
-2,Panela,9,gr,500
+2,Panela,9,Unidad,500
 2,Carne de cerdo,60,gr,1
 2,Tomate chonto,20,gr,1
 2,Pimentón,8,gr,1
@@ -31,7 +31,7 @@ menu,producto,cantidad,unidad,empaque
 2,Fruta grupo N°1,180,Unidad,180
 3,Leche entera en polvo,15,Bolsa gr,380
 3,Cocoa en polvo sin azúcar,5,Bolsa/gr,230
-3,Panela,9,gr,500
+3,Panela,9,Unidad,500
 3,Huevo de gallina tipo A,55,Unidad,53
 3,Aceite vegetal,14,Frasco,500
 3,Sal yodada,1,Bolsa/gr,500
@@ -71,6 +71,7 @@ menu,producto,cantidad,unidad,empaque
 5,Pan hamburguesa,40,Pqt/gr,50
 5,Margarina suave de mesa,2,Barra/gr,125
 5,Queso mozzarella,16,Pqt/gr,250
-5,Panela,3,gr,500
+5,Panela,3,Unidad,500
 5,Papa capira,70,gr,1
+
 
