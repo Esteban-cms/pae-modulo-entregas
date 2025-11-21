@@ -1,0 +1,75 @@
+MENU,PRODUCTO,CANTIDAD_POR_ESTUDIANTE,UNIDAD,EMPACADO
+1,Leche entera en polvo,15,Bolsa gr,380
+1,Cocoa en polvo sin azúcar,5,Bolsa/gr,230
+1,Panela,9,gr,500
+1,Pan tajado,44,Pqt/gr,500
+1,Queso blanco o campesino,50,Pqt/gr,500
+1,Margarina suave de mesa,5,Barra/gr,125
+1,Tomate chonto,20,gr,1
+1,Sal yodada,0.3,Bolsa/gr,500
+1,Zanahoria,30,gr,1
+1,Harina de trigo fortificada,10,Bolsa/gr,500
+1,Huevo de gallina Tipo A,10,Unidad,53
+1,Aceite vegetal,5,Frasco,500
+1,Canela,0.1,gr,1
+1,Azúcar refinada,5,Bolsa/gr,500
+2,Leche entera en polvo,15,Bolsa gr,380
+2,Panela,9,gr,500
+2,Carne de cerdo,60,gr,1
+2,Tomate chonto,20,gr,1
+2,Pimentón,8,gr,1
+2,Cebolla cabezona,20,gr,1
+2,Ajo,1,gr,1
+2,Pimienta,0.1,Pqt/gr,30
+2,Aceite vegetal,2,Frasco,500
+2,Sal yodada,0.5,Bolsa/gr,500
+2,Yuca,60,gr,1
+2,Margarina suave de mesa,10,Barra/gr,125
+2,Laurel seco,0.1,Pqt/gr,20
+2,Arroz,40,Bolsa/gr,500
+2,Espinaca,20,gr,1
+2,Fruta grupo N°1,180,Unidad,180
+3,Leche entera en polvo,15,Bolsa gr,380
+3,Cocoa en polvo sin azúcar,5,Bolsa/gr,230
+3,Panela,9,gr,500
+3,Huevo de gallina tipo A,55,Unidad,53
+3,Aceite vegetal,14,Frasco,500
+3,Sal yodada,1,Bolsa/gr,500
+3,Arroz,40,Bolsa/gr,500
+3,Cebolla junca,8,gr,1
+3,Plátano hartón maduro,70,gr,1
+3,Queso blanco o campesino,15,Pqt/gr,500
+4,Avena en hojuelas,10,Bolsa gr,200
+4,Azúcar refinada,9,Bolsa/gr,500
+4,Carne de res magra,60,gr,1
+4,Pimentón,10,gr,1
+4,Cebolla junca,10,gr,1
+4,Ajo,0.5,gr,1
+4,Paprika,0.1,Pqt/gr,15
+4,Tomillo,0.1,Pqt/gr,15
+4,Cilantro,0.5,gr,1
+4,Aceite vegetal,2,Frasco,500
+4,Sal yodada,0.7,Bolsa/gr,500
+4,Harina de maíz,40,Bolsa/gr,500
+4,Margarina suave de mesa,5,Barra/gr,125
+4,Galletas tipo soda,16,Pqt/gr,128
+4,Fruta grupo N°3,180,gr,1
+4,Tomate chonto,20,gr,1
+5,Fruta de cosecha,60,gr,1
+5,Azúcar refinada,9,Bolsa/gr,500
+5,Lentejas,10,Bolsa/gr,500
+5,Proteína vegetal de soya,7,Pqt/gr,165
+5,Harina de trigo fortificada,5,Bolsa/gr,500
+5,Pimentón,8,gr,1
+5,Ajo,0.5,gr,1
+5,Orégano seco,0.1,Pqt/gr,10
+5,Pimienta,0.1,Pqt/gr,30
+5,Cebolla cabezona,15,gr,1
+5,Zanahoria,15,gr,1
+5,Aceite vegetal,5,Frasco,500
+5,Sal yodada,0.2,Bolsa/gr,500
+5,Pan hamburguesa,40,Pqt/gr,50
+5,Margarina suave de mesa,2,Barra/gr,125
+5,Queso mozzarella,16,Pqt/gr,250
+5,Panela,3,gr,500
+5,Papa capira,70,gr,1
