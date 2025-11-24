@@ -1,98 +1,451 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Generador Actas PAE — Material UI (Interfaz verde editable)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{--primary:#1A73E8;--paegreen:#cfead0;--bg:#f5f7fb;--card:#fff;--muted:#54657a}
-    *{box-sizing:border-box}
-    body{font-family:Inter, Arial, sans-serif;margin:0;background:var(--bg);color:#0b2545}
-    header{background:linear-gradient(90deg,#fff 0%, #f7fbff 100%);padding:14px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #e6eef7}
-    .brand{width:48px;height:48px;border-radius:8px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
-    .title{font-weight:700;font-size:16px}
-    .container{padding:18px;display:grid;grid-template-columns:420px 1fr;gap:18px}
-    .card{background:var(--card);border-radius:12px;padding:14px;border:1px solid #e9f0fb;box-shadow:0 6px 18px rgba(11,37,69,0.03)}
-    label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:6px}
-    input[type=text], input[type=number], select, textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef7;background:#fbfeff}
-    textarea{min-height:70px}
-    .muted{font-size:13px;color:var(--muted)}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    button{background:var(--primary);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:600}
-    button.ghost{background:#fff;color:var(--primary);border:1px solid #d8e9ff}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:8px;border:1px solid #e9f0fb;text-align:left;font-size:13px}
-    th{font-weight:700;color:var(--muted)}
-    .preview{padding:12px;background:#fff;border-radius:8px;min-height:160px}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Generador Actas PAE — Tablero Verde</title>
 
-    /* Editable green form resembling your screenshot */
-    .green-form{background:#f7fff7;border-radius:8px;padding:10px;border:1px solid #d6eed8}
-    .green-row{display:grid;grid-template-columns:200px 1fr 160px 120px;gap:8px;align-items:center;margin-bottom:6px}
-    .green-input{background:var(--paegreen);border:1px solid #bfe0b9;padding:8px;border-radius:6px}
-    .green-select{background:#eafbe9;border:1px solid #cfe6c8;padding:6px;border-radius:6px}
+<!-- Dependencias -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
-    /* PDF acta styles (A4) */
-    .pdf-container{width:210mm;min-height:297mm;padding:12mm;margin:0 auto;background:white}
-    .acta{page-break-after:always;padding:8mm 10mm;font-family: Arial, Helvetica, sans-serif;font-size:12px}
-    .acta .header{display:flex;align-items:center;border-bottom:3px solid #1A4D8F;padding-bottom:8px;margin-bottom:10px}
-    .acta .logo-img{height:60px;margin-right:8px}
-    .acta .title{font-size:16px;color:#1A4D8F;font-weight:700}
-    .acta table{width:100%;border-collapse:collapse;margin-top:8px}
-    .acta th,.acta td{border:1px solid #000;padding:6px;font-size:12px}
-    .right{text-align:right}
-    .center{text-align:center}
-  </style>
+<style>
+  :root{
+    --green:#1b5e20;
+    --soft-green:#dff4e0;
+    --card:#fff;
+    --muted:#52606a;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter, Arial, sans-serif; background:#eef6ed; margin:0; color:#08301a}
+  header{background:var(--green); color:#fff; padding:18px 12px; text-align:center}
+  header h1{margin:0;font-size:20px}
+  .wrap{max-width:1200px;margin:18px auto;padding:12px}
+  .grid{display:grid;grid-template-columns:360px 1fr;gap:14px}
+  .card{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 6px 18px rgba(5,40,10,0.06)}
+  label{display:block;font-weight:700;color:var(--muted);margin-top:8px}
+  input[type=text], input[type=number], select, textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #dbeede;background:#fbfffb}
+  textarea{min-height:70px}
+  .muted{color:#5a6b5a;font-size:13px}
+  button{background:var(--green);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px}
+  button.ghost{background:#fff;color:var(--green);border:1px solid #dbeede}
+  .small{font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:8px;border:1px solid #e6f0e8;font-size:13px}
+  th{background:#f0fbf3;text-align:left}
+  .preview{min-height:220px;padding:10px;background:#fff;border-radius:8px;overflow:auto}
+  /* acta styles for PDF */
+  .pdf-page{width:210mm;min-height:279mm;padding:12mm;margin:0 auto;background:#fff;box-sizing:border-box}
+  .acta-header{display:flex;align-items:center;gap:8px;border-bottom:3px solid #1A4D8F;padding-bottom:8px;margin-bottom:10px}
+  .acta-title{color:#1A4D8F;font-weight:700;font-size:16px}
+  .right{text-align:right}
+  .center{text-align:center}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+</style>
 </head>
 <body>
-  <header>
-    <div class="brand">PAE</div>
-    <div>
-      <div class="title">Generador Actas PAE — Interfaz oficial</div>
-      <div class="muted">Rellena la información (áreas verdes son editables). Luego selecciona las escuelas y genera el PDF único con las actas.</div>
-    </div>
-  </header>
+<header>
+  <h1>Generador de Actas de Entrega PAE — Tablero Administrativo</h1>
+  <div class="small">Selecciona ciclos, menús exactos, edita cupos y genera un PDF único con todas las actas.</div>
+</header>
 
-  <div class="container">
+<div class="wrap">
+  <div class="grid">
+    <!-- LEFT: controles -->
     <aside class="card">
-      <label>URL base del repo (raw)</label>
-      <input id="repo-url" type="text" value="https://raw.githubusercontent.com/Esteban-cms/pae-modulo-entregas/main/" />
-      <div class="actions"><button id="btn-fetch">Leer CSVs</button><button id="btn-reset" class="ghost">Reiniciar</button></div>
+      <label>URL raw base del repo (GitHub)</label>
+      <input id="repo-url" type="text" value="https://raw.githubusercontent.com/Esteban-cms/pae-modulo-entregas/main/">
+      <div class="small">Asegúrate que los archivos estén en la raíz con estos nombres: <code>Semana 1.csv</code> ... <code>Semana 4.csv</code> y <code>escuelas.csv</code></div>
 
-      <hr style="margin:12px 0;border-top:1px dashed #eef6ff">
+      <button id="btn-load">Leer CSVs desde repo</button>
+      <div id="load-status" class="small" style="margin-top:8px"></div>
 
-      <label>Selecciona semanas</label>
-      <select id="semanas" multiple size="4"></select>
-      <div id="menus-areas" style="margin-top:8px"></div>
-      <div class="actions" style="margin-top:8px"><button id="btn-load-menus" class="ghost">Cargar menús</button></div>
+      <hr style="margin:12px 0;border-top:1px dashed #e6f4ea">
 
-      <hr style="margin:12px 0;border-top:1px dashed #eef6ff">
+      <label>Selecciona Ciclo / Semana 1</label>
+      <select id="select-cycle-1"></select>
 
-      <label>Escuelas (elige para generar PDF)</label>
-      <div style="display:flex;gap:8px;margin-top:8px;margin-bottom:8px"><input id="search-school" type="text" placeholder="Buscar escuela o COD"><button id="btn-select-all" class="ghost">Seleccionar todo</button></div>
-      <div style="max-height:360px;overflow:auto;border-top:1px dashed #eef6ff;padding-top:8px">
-        <table id="schools-table"><thead><tr><th></th><th>COD</th><th>Centro educativo</th><th>Cupos (editable)</th></tr></thead><tbody></tbody></table>
+      <label>Elige menú(s) exactos para Ciclo 1</label>
+      <select id="menus-cycle-1" multiple size="6" style="width:100%"></select>
+
+      <label>Días programados — Ciclo 1</label>
+      <input id="days-cycle-1" type="number" value="5" min="1" max="7">
+
+      <hr style="margin:12px 0;border-top:1px dashed #e6f4ea">
+
+      <label>Selecciona Ciclo / Semana 2</label>
+      <select id="select-cycle-2"></select>
+
+      <label>Elige menú(s) exactos para Ciclo 2</label>
+      <select id="menus-cycle-2" multiple size="6" style="width:100%"></select>
+
+      <label>Días programados — Ciclo 2</label>
+      <input id="days-cycle-2" type="number" value="5" min="1" max="7">
+
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="btn-prepare" class="ghost">Preparar menús</button>
+        <button id="btn-calc">Calcular víveres</button>
       </div>
     </aside>
 
+    <!-- RIGHT: main -->
     <main>
       <div class="card">
-        <h3 style="margin:0 0 8px 0">Datos generales de la entrega (edítalos en verde)</h3>
-        <div class="green-form">
-          <div class="green-row"><div><b>Operador</b></div><div><input id="operador" class="green-input" value="JOHN FREDDY ALZATE ZAPATA"></div><div><b>N° de entrega</b></div><div><input id="entrega-num" class="green-input" value="8" type="number"></div></div>
+        <h2>Escuelas — CUPOS (editable)</h2>
+        <div class="small">Edita los cupos antes de calcular. Marca las escuelas que quieres incluir en el PDF.</div>
+        <div style="margin-top:8px">
+          <input id="search" type="text" placeholder="Buscar por nombre o COD..." />
+          <button id="btn-select-all" class="ghost">Seleccionar todo</button>
+        </div>
+        <div style="margin-top:8px;overflow:auto;max-height:280px">
+          <table id="schools-table">
+            <thead><tr><th></th><th>COD_DANE</th><th>Centro educativo</th><th>Cupos</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
-          <div class="green-row"><div><b>Municipio</b></div><div><input id="municipio" class="green-input" value="BRICEÑO"></div><div><b>Subregión</b></div><div><input id="subregion" class="green-input" value="NORTE"></div></div>
+      <div class="card" style="margin-top:12px">
+        <h2>Previsualización de Acta (selecciona escuela)</h2>
+        <select id="preview-school" style="width:100%;margin-bottom:8px"></select>
+        <div class="preview" id="preview-area">No hay cálculos. Carga CSVs y prepara menús.</div>
+      </div>
 
-          <div class="green-row"><div><b>Establecimiento</b></div><div><input id="establecimiento" class="green-input" value="C. E. R. ALTO DE CHIRI"></div><div><b>Código DANE</b></div><div><input id="codigo-dane" class="green-input" value="10510700016609"></div></div>
+      <div class="card" style="margin-top:12px">
+        <h2>Resumen consolidado</h2>
+        <div id="summary-area" class="small">No calculado.</div>
+        <div style="margin-top:12px">
+          <button id="btn-generate">Generar PDF único (todas las actas seleccionadas)</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
 
-          <div class="green-row"><div><b>Lugar de entrega</b></div><div><input id="lugar" class="green-input" value="CARRERA 10 NR 12-02"></div><div><b>Hora de entrega</b></div><div><input id="hora" class="green-input" value="9:00 AM"></div></div>
+<script>
+/* ---------- Config & state ---------- */
+const DEFAULT_BASE = document.getElementById('repo-url').value.trim();
+const FALLBACK_IMAGES = [
+  '/mnt/data/a8dd408b-dd02-427e-9679-37ebadcbc9f4.png',
+  '/mnt/data/a4be31fb-ac6e-4be4-9e6c-8d82752c1f10.png',
+  '/mnt/data/0ae641fc-a1dc-4eb8-8c7d-801bc53cb803.png',
+  '/mnt/data/c598d830-51a6-4cf2-ad5b-1edfa69ed77c.png'
+];
 
-          <div class="green-row"><div><b>Vehículo/Marca</b></div><div><input id="vehiculo" class="green-input" value="CHEVROLET"></div><div><b>Placa</b></div><div><input id="placa" class="green-input" value="LK0959"></div></div>
+let BASE = DEFAULT_BASE.endsWith('/') ? DEFAULT_BASE : DEFAULT_BASE + '/';
+let rawWeeks = {};      // rawWeeks[1..4] = parsed CSV arrays
+let schools = [];       // array of school rows (with CUPOS)
+let PRODUCTS = {};      // aggregated products from selected menus
+let CALC = null;        // {results, summary}
 
-          <div class="green-row"><div><b>Fecha de entrega</b></div><div><input id="fecha-entrega" class="green-input" value="2025-11-07" type="date"></div><div><b>Nº ciclo del menú</b></div><div><input id="ciclo" class="green-input" value="3"></div></div>
+function $id(id){ return document.getElementById(id); }
 
-          <div class="green-row"><div><b>Fechas consumo - Desde</b></div><div><input id="desde" class="green-input" value="2025-11-10" type="date"></div><div><b>Hasta</b></div><div><input id="hasta" class="green-input" value="2025-11-19" type="date"></div></div>
+/* ---------- Utility: fetch CSV ---------- */
+async function fetchCSV(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('HTTP '+res.status+' — '+url);
+  const txt = await res.text();
+  return Papa.parse(txt, {header:true, skipEmptyLines:true}).data;
+}
 
-          <div class="green-row"><div><b>Número de cupos raciones por día</b></div><div><input id="cupos-dia" class="green-input" value="1" type="number"></div><div><b>Número de días de consumo</b></div><div><input id="dias-consumo" class="green-input" value="10" type="number"></div></div>
+/* ---------- Load CSVs ---------- */
+async function leerCSVs(){
+  const baseInput = $id('repo-url').value.trim();
+  if(!baseInput) return alert('Coloca la URL raw base del repo.');
+  BASE = baseInput.endsWith('/') ? baseInput : baseInput + '/';
+  $id('load-status').innerText = 'Cargando CSVs...';
+  try{
+    // load escuelas
+    const esc = await fetchCSV(BASE + 'escuelas.csv');
+    // normalize fields
+    schools = esc.map(r => ({
+      COD_DANE: r.COD_DANE || r.COD || r.codigo || '',
+      CENTRO_EDUCATIVO: r.CENTRO_EDUCATIVO || r.NOMBRE || r.centro || '',
+      CUPOS: parseInt(r.CUPOS) || 0,
+      _raw:r
+    }));
+    // load week files
+    for(let i=1;i<=4;i++){
+      rawWeeks[i] = await fetchCSV(BASE + `Semana ${i}.csv`);
+    }
+    $id('load-status').innerText = 'CSV cargados.';
+    populateCycleSelectors();
+    renderSchoolsTable();
+    alert('CSV cargados. Selecciona ciclos y menús.');
+  }catch(e){
+    console.error(e);
+    $id('load-status').innerText = 'Error: ' + e.message;
+    alert('Error cargando CSVs: ' + e.message);
+  }
+}
 
-          <div style="margin-top:8px"><label>Detalle entrega / operador y recibe municipio (texto libre)</label><textarea id="detalle-entrega">JOHN FRE
+/* ---------- Populate cycle selects & menu lists ---------- */
+function populateCycleSelectors(){
+  const c1 = $id('select-cycle-1'), c2 = $id('select-cycle-2');
+  c1.innerHTML = ''; c2.innerHTML = '';
+  for(let i=1;i<=4;i++){
+    const o1 = document.createElement('option'); o1.value=i; o1.text = 'Semana '+i;
+    const o2 = document.createElement('option'); o2.value=i; o2.text = 'Semana '+i;
+    c1.appendChild(o1); c2.appendChild(o2);
+  }
+  // when cycle changes, fill menu lists
+  c1.addEventListener('change', ()=> fillMenuOptions(1, c1.value));
+  c2.addEventListener('change', ()=> fillMenuOptions(2, c2.value));
+  // initial fill
+  fillMenuOptions(1, c1.value || '1');
+  fillMenuOptions(2, c2.value || '2');
+}
+
+function uniqueSorted(arr){
+  return Array.from(new Set(arr)).sort((a,b)=> {
+    const na = parseFloat(a)||a; const nb = parseFloat(b)||b;
+    if(typeof na === 'number' && typeof nb === 'number') return na-nb;
+    return String(a).localeCompare(String(b));
+  });
+}
+
+function fillMenuOptions(cycleIndex, weekValue){
+  const sel = (cycleIndex===1) ? $id('menus-cycle-1') : $id('menus-cycle-2');
+  sel.innerHTML = '';
+  const weekNum = parseInt(weekValue) || 1;
+  const data = rawWeeks[weekNum] || [];
+  // collect unique menu numbers
+  const menus = uniqueSorted(data.map(r => (r['menú']||r['menu']||r['Menu']||'').toString().trim()).filter(x=>x));
+  menus.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.text = `Menú ${m}`;
+    sel.appendChild(opt);
+  });
+}
+
+/* ---------- Schools table ---------- */
+function renderSchoolsTable(){
+  const tbody = $id('schools-table').querySelector('tbody');
+  tbody.innerHTML = '';
+  schools.forEach((s, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><input type="checkbox" class="sel-school" data-i="${idx}" checked></td>
+                    <td>${s.COD_DANE}</td>
+                    <td>${s.CENTRO_EDUCATIVO}</td>
+                    <td><input data-i="${idx}" class="cup-input" type="number" value="${s.CUPOS}" min="0" style="width:90px;padding:4px;border-radius:6px"></td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('.cup-input').forEach(inp => inp.addEventListener('change', e=>{
+    const i = parseInt(e.target.dataset.i); schools[i].CUPOS = parseInt(e.target.value)||0; updatePreviewSelector();
+  }));
+  updatePreviewSelector();
+}
+
+/* ---------- update preview school dropdown ---------- */
+function updatePreviewSelector(){
+  const sel = $id('preview-school'); sel.innerHTML = '';
+  schools.forEach((s,i)=> {
+    const o = document.createElement('option'); o.value = i; o.text = `${s.CENTRO_EDUCATIVO} — ${s.CUPOS||0}`; sel.appendChild(o);
+  });
+}
+
+/* ---------- Collect selected menus and build PRODUCTS ---------- */
+function prepareMenus(){
+  PRODUCTS = {}; // key: product||unidad||empaque
+  const cycle1 = parseInt($id('select-cycle-1').value);
+  const cycle2 = parseInt($id('select-cycle-2').value);
+  const selMenus1 = Array.from($id('menus-cycle-1').selectedOptions).map(o=>o.value);
+  const selMenus2 = Array.from($id('menus-cycle-2').selectedOptions).map(o=>o.value);
+  if(selMenus1.length===0 && selMenus2.length===0) return alert('Selecciona al menos un menú en alguno de los ciclos.');
+  // helper to add from week data and selected menus array
+  function addFromWeek(weekNum, selectedMenus){
+    const data = rawWeeks[weekNum] || [];
+    data.forEach(row=>{
+      const menuVal = (row['menú']||row['menu']||row['Menu']||'').toString().trim();
+      if(!selectedMenus.includes(menuVal)) return;
+      const prod = (row['producto']||row['Producto']||'').toString().trim();
+      if(!prod) return;
+      const cantidad = parseFloat(row['cantidad']) || 0;
+      const unidad = (row['unidad']||row['Unidad']||'').toString().trim();
+      const empaque = parseFloat(row['empaque']) || 1;
+      const key = `${prod}||${unidad}||${empaque}`;
+      if(!PRODUCTS[key]) PRODUCTS[key] = {producto:prod, unidad, empaque, porEstudiante_sum:0, menusCount:0};
+      PRODUCTS[key].porEstudiante_sum += cantidad;
+      PRODUCTS[key].menusCount += 1;
+    });
+  }
+  addFromWeek(cycle1, selMenus1);
+  addFromWeek(cycle2, selMenus2);
+  if(Object.keys(PRODUCTS).length===0) return alert('No se encontraron productos en los menús seleccionados.');
+  alert('Menús preparados: ' + Object.keys(PRODUCTS).length + ' productos distintos.');
+}
+
+/* ---------- Calculation logic ---------- */
+/*
+  For each product:
+    porEstudiante_sum = sum(cantidad) across selected menus (for both cycles)
+    menusCount = number of menu occurrences counted
+    We use days to scale:
+      total_per_student = porEstudiante_sum * (daysCycleTotal / menusCount)
+    (This approximates repeated menus if days != number of selected menus.)
+*/
+function calculateAll(){
+  if(Object.keys(PRODUCTS).length===0){ return alert('Primero selecciona menús y pulsa \"Preparar menús\"'); }
+  // determine days total from cycles and counts
+  const days1 = parseInt($id('days-cycle-1').value) || 0;
+  const days2 = parseInt($id('days-cycle-2').value) || 0;
+  const menusCountTotal = Object.values(PRODUCTS).reduce((s,p)=> s + (p.menusCount||0), 0) || 1;
+  const daysTotal = days1 + days2 || 1;
+  // compute per school
+  const results = schools.map(s => {
+    const C = parseInt(s.CUPOS) || 0;
+    const products = {};
+    Object.values(PRODUCTS).forEach(p => {
+      // scale factor: distribute days proportionally to menusCount
+      const scale = (p.menusCount / menusCountTotal) * (daysTotal); // allocate days proportional to menu count
+      // total grams per student over the cycles
+      const total_per_student = p.porEstudiante_sum * (scale / (p.menusCount || 1));
+      const total_quincena = total_per_student * C; // total grams for the school for the delivery
+      const cantidad_sin = total_quincena / (parseFloat(p.empaque) || 1);
+      const cantidad_ent = Math.ceil(cantidad_sin);
+      products[p.producto] = {
+        unidad: p.unidad,
+        empaque: p.empaque,
+        porEstudiante: parseFloat(total_per_student.toFixed(4)),
+        total_quincena,
+        cantidad_sin,
+        cantidad_ent
+      };
+    });
+    return { school: s, products };
+  });
+  // summary
+  const summary = {};
+  results.forEach(r=>{
+    for(const prod in r.products){
+      const it = r.products[prod];
+      if(!summary[prod]) summary[prod] = { total:0, unidad: it.unidad, empaque: it.empaque };
+      summary[prod].total += it.total_quincena;
+    }
+  });
+  CALC = { results, summary };
+  renderPreview();
+  renderSummary();
+  alert('Cálculo completado.');
+}
+
+/* ---------- Render preview for selected school ---------- */
+function renderPreview(){
+  const idx = parseInt($id('preview-school').value || 0);
+  if(!CALC){ $id('preview-area').innerText = 'No hay cálculos.'; return; }
+  const r = CALC.results[idx];
+  if(!r){ $id('preview-area').innerText = 'Escuela no encontrada.'; return; }
+  const s = r.school;
+  let html = `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+    <div style="flex:1"><img src="${BASE+'Imagen1.png'}" style="height:48px" onerror="this.src='${FALLBACK_IMAGES[0]}'"></div>
+    <div style="text-align:right"><div style="font-weight:700;color:#1A4D8F">ACTA DE ENTREGA DE VÍVERES PAE</div><div class="small">Datos de la entrega</div></div>
+  </div>`;
+  html += `<table><tr><th>Operador</th><td>${escapeHtml($id('repo-url').value? '' : '')}${escapeHtml($id('preview-school').value)}</td><th>N° entrega</th><td>${escapeHtml($id('select-cycle-1').value)} / ${escapeHtml($id('select-cycle-2').value)}</td></tr>`;
+  html += `<tr><th>Municipio</th><td>${escapeHtml($id('repo-url').value? '' : '')}</td><th>Subregión</th><td></td></tr>`;
+  html += `<tr><th>Establecimiento</th><td>${escapeHtml(s.CENTRO_EDUCATIVO)}</td><th>Código DANE</th><td>${escapeHtml(s.COD_DANE)}</td></tr>`;
+  html += `</table>`;
+  html += `<h4 style="margin-top:8px">Relación de víveres</h4>`;
+  html += `<table><thead><tr><th>Producto</th><th>Gr x Estudiante</th><th>Total (gr)</th><th>Empaque</th><th>Cant sin redondear</th><th>Cant entregada</th></tr></thead><tbody>`;
+  for(const p in r.products){
+    const v = r.products[p];
+    html += `<tr><td>${escapeHtml(p)}</td><td class="right">${v.porEstudiante}</td><td class="right">${v.total_quincena.toFixed(2)}</td><td class="right">${v.empaque}</td><td class="right">${v.cantidad_sin.toFixed(4)}</td><td class="right">${v.cantidad_ent}</td></tr>`;
+  }
+  html += `</tbody></table>`;
+  $id('preview-area').innerHTML = html;
+}
+
+/* ---------- Render summary ---------- */
+function renderSummary(){
+  if(!CALC){ $id('summary-area').innerText = 'No calculado.'; return; }
+  let html = `<table><thead><tr><th>Producto</th><th>Total (unidad base)</th><th>Empaque</th><th>Entregas redondeadas</th></tr></thead><tbody>`;
+  for(const p in CALC.summary){
+    const it = CALC.summary[p];
+    const entregas = Math.ceil(it.total / (parseFloat(it.empaque)||1));
+    html += `<tr><td>${escapeHtml(p)}</td><td class="right">${it.total.toFixed(2)}</td><td class="right">${it.empaque}</td><td class="right">${entregas}</td></tr>`;
+  }
+  html += `</tbody></table>`;
+  $id('summary-area').innerHTML = html;
+}
+
+/* ---------- Generate single PDF with all actas (vertical/carta) ---------- */
+async function generatePDF(){
+  if(!CALC) return alert('Primero calcula las cantidades.');
+  // build container with pages
+  const container = document.createElement('div');
+  CALC.results.forEach((r, idx) => {
+    // check if school selected
+    const cb = document.querySelectorAll('.sel-school')[idx];
+    if(cb && !cb.checked) return; // skip unselected
+    const s = r.school;
+    const page = document.createElement('div');
+    page.className = 'pdf-page';
+    // header with images (try repo images else fallback)
+    const imgsHtml = [1,2,3,4].map((n,i) => `<img src="${BASE+'Imagen'+n+'.png'}" style="height:48px;margin-right:6px" onerror="this.src='${FALLBACK_IMAGES[i]||FALLBACK_IMAGES[0]}'">`).join('');
+    let html = `<div class="acta"><div class="acta-header">${imgsHtml}<div style="flex:1;text-align:right"><div class="acta-title">ACTA DE ENTREGA DE VÍVERES PAE</div></div></div>`;
+    html += `<table><tr><th>Operador</th><td>${escapeHtml($id('repo-url').value? '' : '')}</td><th>N° de entrega</th><td>${escapeHtml($id('select-cycle-1').value)} / ${escapeHtml($id('select-cycle-2').value)}</td></tr>`;
+    html += `<tr><th>Municipio</th><td>${escapeHtml('')}</td><th>Subregión</th><td>${escapeHtml('')}</td></tr>`;
+    html += `<tr><th>Establecimiento</th><td>${escapeHtml(s.CENTRO_EDUCATIVO)}</td><th>Código DANE</th><td>${escapeHtml(s.COD_DANE)}</td></tr>`;
+    html += `<tr><th>Lugar de entrega</th><td>${escapeHtml('')}</td><th>Fecha de entrega</th><td>${escapeHtml(new Date().toLocaleDateString())}</td></tr>`;
+    html += `<tr><th>Fechas de consumo</th><td>Desde: ${escapeHtml($id('days-cycle-1').value)} días (c1)</td><th>Hasta</th><td>${escapeHtml($id('days-cycle-2').value)} días (c2)</td></tr></table>`;
+    html += `<h4>Relación de víveres con unidad de medida y cantidad a entregar</h4>`;
+    html += `<table><thead><tr><th>Listado de víveres</th><th>Gr x cupo</th><th>Gr x total cupos</th><th>Unidad/Empaque</th><th>Cant sin redondear</th><th>Cant entregada</th></tr></thead><tbody>`;
+    for(const p in r.products){
+      const v = r.products[p];
+      html += `<tr><td>${escapeHtml(p)}</td><td class="right">${v.porEstudiante}</td><td class="right">${v.total_quincena.toFixed(2)}</td><td class="right">${v.unidad || v.empaque}</td><td class="right">${v.cantidad_sin.toFixed(4)}</td><td class="right">${v.cantidad_ent}</td></tr>`;
+    }
+    html += `</tbody></table>`;
+    html += `<div style="margin-top:12px"><table style="width:100%"><tr><td style="height:80px"></td><td style="height:80px"></td></tr><tr><td style="text-align:center">NOMBRE<br>CARGO<br>NÚMERO DE CÉDULA</td><td style="text-align:center">NOMBRE<br>CARGO<br>NÚMERO DE CÉDULA<br>Entrega — Municipio ___ Operador ___</td></tr></table></div>`;
+    html += `</div>`;
+    page.innerHTML = html;
+    container.appendChild(page);
+  });
+
+  // summary page
+  const sumPage = document.createElement('div'); sumPage.className = 'pdf-page';
+  let sumHtml = `<div style="text-align:center;font-weight:700;margin-bottom:8px">Resumen consolidado de la entrega</div>`;
+  sumHtml += `<div><strong>Operador:</strong> ${escapeHtml('')} — <strong>Ciclos:</strong> ${escapeHtml($id('select-cycle-1').value)} / ${escapeHtml($id('select-cycle-2').value)}</div>`;
+  sumHtml += `<table><thead><tr><th>Producto</th><th>Total (unidad base)</th><th>Empaque</th><th>Entregas redondeadas</th></tr></thead><tbody>`;
+  for(const p in CALC.summary){
+    const it = CALC.summary[p]; const entregas = Math.ceil(it.total / (parseFloat(it.empaque)||1));
+    sumHtml += `<tr><td>${escapeHtml(p)}</td><td class="right">${it.total.toFixed(2)}</td><td class="right">${it.empaque}</td><td class="right">${entregas}</td></tr>`;
+  }
+  sumHtml += `</tbody></table>`;
+  sumPage.innerHTML = sumHtml;
+  container.appendChild(sumPage);
+
+  // generate PDF
+  await html2pdf().set({
+    margin: 10,
+    filename: `Actas_Entrega.pdf`,
+    image: { type: 'jpeg', quality: 0.97 },
+    html2canvas: { scale: 1.2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(container).save();
+  alert('PDF único generado (vertical / carta).');
+}
+
+/* ---------- Small helpers ---------- */
+function escapeHtml(s){ if(s===null||s===undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- Wiring ---------- */
+$id('btn-load').addEventListener('click', leerCSVs);
+$id('btn-prepare').addEventListener('click', prepareMenus);
+$id('btn-calc').addEventListener('click', calculateAll);
+$id('btn-generate').addEventListener('click', generatePDF);
+$id('btn-select-all').addEventListener('click', ()=> document.querySelectorAll('.sel-school').forEach(cb=> cb.checked = true));
+$id('search').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('#schools-table tbody tr').forEach(tr=>{
+    tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+$id('preview-school').addEventListener('change', renderPreview);
+
+/* ---------- Auto init: try to populate cycles if CSVs already provided */ 
+window.addEventListener('load', ()=>{
+  // if the user left the repo url as default, do nothing automatic; they must click Leer CSVs
+});
+</script>
+</body>
+</html>
